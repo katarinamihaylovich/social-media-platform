@@ -4,6 +4,8 @@ const { ObjectId } = require('mongoose').Types;
 module.exports = {
     getUsers(req, res) {
         User.find()
+            .populate()
+            .select('-__v')
             .then(async (users) => {
                 const userObj = {
                     users

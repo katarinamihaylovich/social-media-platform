@@ -5,6 +5,8 @@ const { ObjectId } = require('mongoose').Types;
 module.exports = {
     getThoughts(req, res) {
         Thought.find()
+            .populate()
+            .select('-__v')
             .then(async (thoughts) => {
                 const thoughtObj = {
                     thoughts
@@ -34,8 +36,18 @@ module.exports = {
     },
     createThought(req, res) {
         Thought.create(req.body)
-            .then((thought) => res.json(thought))
-            .catch((err) => res.status(500).json(err));
+            .then((thought) => {
+                return User.findOneAndUpdate(
+                    { _id: req.body.userId },
+                    { $push: { thoughts: thought._id} },
+                    { new: true }
+                )
+            })
+            .then(thought => res.json(thought))
+            .catch((err) => {
+                console.log(err);
+                return res.status(500).json(err);
+            })
     },
     updateThought(req, res) {
         Thought.findOneAndUpdate({_id: req.params.thoughtId},
