@@ -50,7 +50,7 @@ module.exports = {
             })
     },
     updateThought(req, res) {
-        Thought.findOneAndUpdate({_id: req.params.thoughtId},
+        Thought.findOneAndUpdate({_id: req.params._id},
             { $set: req.body},
             {runValidators: true, new: true})
             .then((thought) => 
@@ -63,19 +63,13 @@ module.exports = {
             .catch((err) => res.status(500).json(err));
     },
     deleteThought(req, res) {
-        Thought.findOneAndRemove({ _id: req.params.thoughtId})
+        Thought.findOneAndDelete({ _id: req.params._id})
             .then((thought) => 
                 !thought
                     ? res.status(404).json({ message: 'Thought does not exist.'})
-                    : reactionSchema.findOneAndUpdate(
-                        {thoughts: req.params.thoughtId},
-                        { $pull: {thoughts: req.params.thoughtId} },
-                        {new: true}
-                    ))
-            .catch((err) => {
-                console.log(err);
-                res.status(500).json(err);
-            })
+                    : res.json({ message: 'Thought deleted.'})
+            .catch((err) => res.status(500).json(err))
+        )
     },
     postReaction(req, res)  {
         console.log('React to this thought!');

@@ -20,8 +20,8 @@ module.exports = {
     getSingleUser(req, res) {
         User.findOne({ _id: req.params.userId })
             .select('-__v')
-            .populate('thoughts')
-            .populate('friends')
+            // .populate('thoughts')
+            // .populate('friends')
             .then(async (user) =>
                 !user
                     ? res.status(404).json({ message: 'No user with that ID' })
@@ -54,15 +54,7 @@ module.exports = {
     },
     deleteUser(req, res) {
         User.findOneAndRemove({ _id: req.params.userId})
-            .then((user) => 
-                !user  
-                    ? res.status(404).json({ message: 'User does not exist.'})
-                    : Thought.findOneAndUpdate(
-                        { users: req.params.userId},
-                        { $pull: {users: req.params.userId } },
-                        { new: true }
-                    )
-                )
+            .then(res.json({message: 'User has been deleted.'}))
             .catch((err) => {
                 console.log(err);
                 res.status(500).json(err);
@@ -73,7 +65,7 @@ module.exports = {
         console.log(req.body);
         User.findOneAndUpdate(
             { _id: req.params.userId },
-            { $addToSet: {friends: req.body} },
+            { $push: {friends: req.params.friendId} },
             { runValidators: true, new: true }
         )
         .then((user) => 
@@ -86,17 +78,16 @@ module.exports = {
         .catch((err) => res.status(500).json(err));
     },
     removeFriend(req, res) {
-        User.findOneAndDelete(
+        User.findOneAndUpdate(
             { _id: req.params.userId },
-            { $pull: {friends: {$in: req.params.friendId}}},
-            { runValidators: true, new: true }
+            { $pull: {friends: req.params.friendId }},
         )
         .then((user) => 
             !user
                 ? res 
                     .status(404)
                     .json({ message: 'No user found with that ID.'})
-                : res.json(user)
+                : res.json({message: 'Friend has been deleted'})
         )
         .catch((err) => res.status(500).json(err));
     }
