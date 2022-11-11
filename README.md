@@ -12,6 +12,9 @@ The purpose of this project was to create an API for a social media network usin
 4. Insomnia
 5. Express
 
+## Link to Video Walkthrough
+https://watch.screencastify.com/v/PDAyofeNzYE0dCjJudgl
+
 ## Screenshots
 
 Users Collection
